@@ -1,0 +1,11 @@
+users:
+  username: []
+  password: []
+fight:
+  monster: 钻地兽群
+  skill: [落叶萧萧]
+mission:
+  id: []  # 1 - 药灵， 2 - 寻宝， 3 - 降妖，按照填入顺序完成，降妖会统一组队完成，请注意队内成员完成情况
+proxy:
+  host: 127.0.0.1
+  port: [1080]
