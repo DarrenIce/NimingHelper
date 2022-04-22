@@ -1,16 +1,3 @@
-'''
-https://game.nimingxx.com/api/task/join
-{
-    'type': 'cy'
-}
-
-{"code":200,"msg":"接取[采药]任务!"}
-{"code":0,"msg":"散修3701，已达今日领取上限!"}
-
-{"msgType":"task_refesh"}
-'''
-
-from weakref import proxy
 from ws import WSocket
 from common import moveto
 from display import DynLog

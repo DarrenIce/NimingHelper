@@ -1,9 +1,3 @@
-from collections import defaultdict, deque
-from functools import partial
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
-
 class UserInfo:
     def __init__(self):
         self.id = 0
@@ -27,8 +21,6 @@ class UserInfo:
         self.fairy = 0  # 灵力
         self.team_pwd = ''
         self.team_num = 0
-        self.info_deque = defaultdict(partial(deque, maxlen=128))
-        self.estimate_info = {}
         self.is_live = False
         self.in_team = False
 
@@ -49,27 +41,3 @@ class MissionInfo:
         self.xunbao_monster = ''
         self.xunbao_id = 0
         self.xunbao_succ = False
-
-def format_string_num(s: str) -> str:
-    sign = np.sign(int(s))
-    num = abs(int(s))
-    if num >= 1e4:
-        return f'{sign * num / 1e4:.1f}万/小时'
-    else:
-        return f'{sign * num:.1f}/小时'
-
-def estimate_info(deq):
-    df = pd.DataFrame(deq)
-    df['time'] = pd.to_datetime(df.time)
-    df.set_index('time', inplace=True)
-    df = df.loc[datetime.now() - timedelta(minutes=20):datetime.now()]
-    if df.shape[0] < 5:
-        return {}
-    df_diff = df.diff(axis=0).dropna(how='all')
-    df_diff["exp"] = df_diff.exp.where(df_diff.exp >= 0, df_diff.exp.median())
-    df_diff["hp_store"] = df_diff.hp_store.where(df_diff.hp_store <= 0, df_diff.hp_store.median())
-    df_diff["mp_store"] = df_diff.mp_store.where(df_diff.mp_store <= 0, df_diff.mp_store.median())
-    deque_sec = (df_diff.index[-1] - df_diff.index[0]).total_seconds()
-    estimate_result = (df_diff.sum() / deque_sec * 3600)
-    estimate = estimate_result.apply(format_string_num)
-    return estimate.to_dict()
