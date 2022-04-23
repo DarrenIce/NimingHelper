@@ -90,7 +90,10 @@ class WSocket:
     def fetchActivityInfo(self, PROXY):
         while True:
             try:
-                r = requests.post("https://game.nimingxx.com/api/role/getActivity", cookies={"sign": self.userinfo.sign, "niming_email": self.username}, proxies=PROXY)
+                headers = {
+                    'accept': 'application/json, text/plain, */*'
+                }
+                r = requests.post("https://game.nimingxx.com/api/role/getActivity", headers=headers, cookies={"sign": self.userinfo.sign, "niming_email": self.username}, proxies=PROXY)
                 DynLog.record_log(self.userinfo.name + " 获取每日任务信息")
                 msg = json.loads(r.text)
                 self.missioninfo['yaoling']['num'] = msg['data']['cy']
