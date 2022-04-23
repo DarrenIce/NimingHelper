@@ -1,11 +1,14 @@
 users:
   username: []
   password: []
+  joinother: False  # 如果需要全部成员加入别人的队伍，填True
+  captainid: 1234   # 别人队伍的队长id，散修后面跟的数字
+  teampwd: ''       # 别人队伍的密令
 fight:
   monster: 钻地兽群
   skill: [落叶萧萧]
 mission:
   id: []  # 1 - 药灵， 2 - 寻宝， 3 - 降妖，按照填入顺序完成，降妖会统一组队完成，请注意队内成员完成情况
 proxy:
-  host: 127.0.0.1
+  host: 127.0.0.1   # 留空则不走代理
   port: [1080]

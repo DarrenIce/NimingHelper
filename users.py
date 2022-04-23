@@ -1,3 +1,4 @@
+from shutil import move
 import threading
 import time
 import os
@@ -5,6 +6,7 @@ import os
 from display import DynLog, DisplayLayout
 from missions import *
 from ws import WSocket
+from common import moveto
 
 class Users:
     def __init__(self, conf):
@@ -33,16 +35,36 @@ class Users:
             self.wss[i].setAutoFight(self.conf.get('fight', {}).get('skill', [])[i])
 
     def do_missions(self):
+        missions_limit = {1: 10, 2: 10, 3: 3}
+        mnum2name = {1: 'yaoling', 2: 'xunbao', 3: 'xiangyao'}
         for i in self.conf.get('mission', {}).get('id', []):
             if i == 1 or i == 2:
                 for ws in self.wss:
-                    ws.createTeam()
-                    ws.setAutoFight(self.conf.get('fight', {}).get('skill', [])[0])
-                    if i == 1:
-                        YaoLing.run(ws, ws.proxies)
-                    elif i == 2:
-                        XunBao.run(ws, ws.proxies)
-                    ws.leaveTeam()
+                    if ws.missioninfo[mnum2name[i]]['num'] < missions_limit[i]:
+                        ws.createTeam()
+                        ws.setAutoFight(self.conf.get('fight', {}).get('skill', [])[0])
+                        if i == 1:
+                            YaoLing.run(ws, ws.proxies)
+                        elif i == 2:
+                            XunBao.run(ws, ws.proxies)
+                        ws.leaveTeam()
+            elif i == 3:
+                captain_num = 0
+                has_team = False
+                for k in range(len(self.wss)):
+                    if self.wss[k].missioninfo[mnum2name[i]]['num'] > missions_limit[i]:
+                        continue
+                    moveto(self.wss[k], self.wss[k].userinfo.loc, '林中栈道')
+                    if not has_team:
+                        captain_num = k
+                        has_team = True
+                        self.wss[k].createTeam()
+                        self.wss[k].setAutoFight('平纹金阳')
+                    else:
+                        self.wss[k].joinTeam(self.wss[captain_num].userinfo.id, self.wss[captain_num].userinfo.team_pwd)
+                        self.wss[k].setAutoFight(self.conf.get('fight', {}).get('skill', [])[k])
+                if has_team:
+                    XiangYao.run(self.wss[captain_num], self.wss[captain_num].proxies)
 
     def fight(self):
         try:

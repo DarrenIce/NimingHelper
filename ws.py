@@ -1,4 +1,4 @@
-from info import UserInfo, MissionInfo
+from info import UserInfo, createMissionInfo
 from display import DynLog
 from common import moveto
 
@@ -17,7 +17,7 @@ LOGIN_API = "https://game.nimingxx.com/api/login"
 class WSocket:
     def __init__(self, username, password, proxy_host, proxy_port):
         self.userinfo = UserInfo()
-        self.missioninfo = MissionInfo()
+        self.missioninfo = createMissionInfo()
         self.username = username
         self.password = password
         self.proxy_host = proxy_host
@@ -93,9 +93,9 @@ class WSocket:
                 r = requests.post("https://game.nimingxx.com/api/role/getActivity", cookies={"sign": self.userinfo.sign, "niming_email": self.username}, proxies=PROXY)
                 DynLog.record_log(self.userinfo.name + " 获取每日任务信息")
                 msg = json.loads(r.text)
-                self.missioninfo.yaoling_num = msg['data']['cy']
-                self.missioninfo.xiangyao_num = msg['data']['xy']
-                self.missioninfo.xunbao_num = msg['data']['xb']
+                self.missioninfo['yaoling']['num'] = msg['data']['cy']
+                self.missioninfo['xiangyao']['num'] = msg['data']['xy']
+                self.missioninfo['xunbao']['num'] = msg['data']['xb']
                 return
             except requests.exceptions.SSLError as e:
                 DynLog.record_log(f'{self.userinfo.name} fetchActivityInfo failed, retry...', True)
@@ -129,12 +129,18 @@ class WSocket:
             DynLog.record_log(f'{self.userinfo.name}移动到' + msg['data']['map'])
             self.userinfo.loc = msg['data']['map']
             for scene in msg['data']['scenes']:
-                if scene['name'] == self.missioninfo.yaoling_monster:
-                    self.missioninfo.yaoling_id = scene['id']
-                    DynLog.record_log(f'{self.missioninfo.yaoling_monster}ID为{self.missioninfo.yaoling_id}')
-                if scene['name'] == self.missioninfo.xunbao_monster:
-                    self.missioninfo.xunbao_id = scene['id']
-                    DynLog.record_log(f'{self.missioninfo.xunbao_monster}ID为{self.missioninfo.xunbao_id}')
+                if scene['name'] == self.missioninfo['yaoling']['monster']:
+                    self.missioninfo['yaoling']['id'] = scene['id']
+                    DynLog.record_log(f"{self.missioninfo['yaoling']['monster']}ID为{self.missioninfo['yaoling']['id']}")
+                if scene['name'] == self.missioninfo['xunbao']['monster']:
+                    self.missioninfo['xunbao']['id'] = scene['id']
+                    DynLog.record_log(f"{self.missioninfo['xunbao']['monster']}ID为{self.missioninfo['xunbao']['id']}")
+                if scene['name'] == self.missioninfo['xiangyao']['monster']:
+                    self.missioninfo['xiangyao']['id'] = scene['id']
+                    self.missioninfo['xiangyao']['run'] = False
+                    DynLog.record_log(f"{self.missioninfo['xiangyao']['monster']}ID为{self.missioninfo['xiangyao']['id']}")
+        elif msg['msgId'] == 'team_move':
+            DynLog.record_log(f'{self.userinfo.name}随队伍移动到' + msg['data']['map'])
         elif msg['msgId'] == 'bat_round_result':
             self.userinfo.fight_num += 1
             if msg['data']['lose'] == 1:
@@ -143,13 +149,14 @@ class WSocket:
             else:
                 self.userinfo.succ_num += 1
                 good_txt = ''
-                self.userinfo.get_exp += msg['m']['exp']
+                if 'exp' in msg['m']:
+                    self.userinfo.get_exp += msg['m']['exp']
                 if 'rewards' in msg['m']:
                     good_txt = "，获得"
                     for good in msg['m']['rewards']:
                         good_txt = good_txt + f"{good['name']}*{good['num']}"
                         self.userinfo.reward_info[good['name']] += good['num']
-                # print(f'{self.userinfo.name}战斗胜利' + good_txt)
+                DynLog.record_log(f'{self.userinfo.name}战斗胜利' + good_txt)
             tnt = ''
             for u in msg['data']['round_arr']:
                 tnt = tnt + f"{u['name']}-{u['process']} "
@@ -174,21 +181,34 @@ class WSocket:
         elif msg['msgId'] == 'task_refesh':
             for task in msg['data']:
                 # DynLog.record_log(task)
-                if '药灵' in task['task']['info']:
-                    self.missioninfo.yaoling_loc = task['d']
-                    self.missioninfo.yaoling_monster = task['scenes'][0]['name']
-                    DynLog.record_log(f"{self.missioninfo.yaoling_monster}在{self.missioninfo.yaoling_loc}")
-                elif '寻宝' in task['task']['info']:
-                    self.missioninfo.xunbao_loc = task['d']
-                    self.missioninfo.xunbao_monster = task['scenes'][0]['name']
-                    DynLog.record_log(f"{self.missioninfo.xunbao_monster}在{self.missioninfo.xunbao_loc}")
+                if 'info' in task['task'] and '药灵' in task['task']['info']:
+                    self.missioninfo['yaoling']['loc'] = task['d']
+                    self.missioninfo['yaoling']['monster'] = task['scenes'][0]['name']
+                    DynLog.record_log(f"{self.missioninfo['yaoling']['monster']}在{self.missioninfo['yaoling']['loc']}")
+                elif 'info' in task['task'] and '寻宝' in task['task']['info']:
+                    self.missioninfo['xunbao']['loc'] = task['d']
+                    self.missioninfo['xunbao']['monster'] = task['scenes'][0]['name']
+                    DynLog.record_log(f"{self.missioninfo['xunbao']['monster']}在{self.missioninfo['xunbao']['loc']}")
+                elif 'name' in task['task'] and task['task']['name'] == '降妖':
+                    self.missioninfo['xiangyao']['loc'] = task['d']
+                    self.missioninfo['xiangyao']['monster'] = task['scenes'][0]['name']
+                    DynLog.record_log(f"{self.missioninfo['xiangyao']['monster']}在{self.missioninfo['xiangyao']['loc']}")
         elif msg['msgId'] == 'complete_task':
             if '药灵' in msg['data']['task']['name']:
-                self.missioninfo.yaoling_succ = True
+                self.missioninfo['yaoling']['succ'] = True
             elif '寻宝' in msg['data']['task']['name']:
-                self.missioninfo.xunbao_succ = True
+                self.missioninfo['xunbao']['succ'] = True
         elif msg['msgId'] == 'ref_task':
-            pass
+            if 'msg' in msg and self.missioninfo['xiangyao']['monster'] in msg['msg']:
+                for task in msg['role_tasks']:
+                    if task['task']['name'] == '降妖':
+                        self.missioninfo['xiangyao']['run'] = True
+                        self.missioninfo['xiangyao']['loop_step'] = task['loop_step']
+            if 'msg' in msg and '完成[降妖]' in msg['msg']:
+                self.missioninfo['xiangyao']['succ'] = True
+                self.missioninfo['xiangyao']['loop_step'] = 11
+        elif msg['msgId'] == 'ch_leave':
+            DynLog.record_log(f"{msg['connId']}离开了队伍")
         else:
             DynLog.record_log(message)
 
@@ -264,6 +284,7 @@ class WSocket:
         with open('skills.json', 'r', encoding='utf-8') as f:
             skills = json.load(f)
         self.send(json.dumps({"msgType":"bat_auto_skill","sid":skills[skill],"auto": True}))
+        DynLog.record_log(f'{self.userinfo.name}设置自动技能为{skill}')
         time.sleep(2)
 
     def refreshInfo(self):
