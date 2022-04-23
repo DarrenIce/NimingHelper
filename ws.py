@@ -12,8 +12,6 @@ import os
 # websocket.enableTrace(True)
 
 headers = {
-    'accept': 'application/json, text/plain, */*',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36',
     'Host': 'game.nimingxx.com'
 }
 
@@ -43,6 +41,7 @@ class WSocket:
             try:
                 r = requests.post(LOGIN_API, headers=headers, data={"loginName": self.username, "loginPwd": self.password}, proxies=self.proxies)
                 if r.status_code == 200:
+                    DynLog.record_log(r.text)
                     login_info = json.loads(r.text)
                     break
             except requests.exceptions.SSLError as e:
