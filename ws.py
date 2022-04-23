@@ -147,25 +147,28 @@ class WSocket:
             DynLog.record_log(f'{self.userinfo.name}随队伍移动到' + msg['data']['map'])
         elif msg['msgId'] == 'bat_round_result':
             self.userinfo.fight_num += 1
-            if msg['data']['lose'] == 1:
-                DynLog.record_log(f'{self.userinfo.name}战斗失败', True)
-                self.userinfo.fail_num += 1
+            if 'lose' not in msg['data']:
+                pass
             else:
-                self.userinfo.succ_num += 1
-                good_txt = ''
-                if 'exp' in msg['m']:
-                    self.userinfo.get_exp += msg['m']['exp']
-                if 'rewards' in msg['m']:
-                    good_txt = "，获得"
-                    for good in msg['m']['rewards']:
-                        good_txt = good_txt + f"{good['name']}*{good['num']}"
-                        self.userinfo.reward_info[good['name']] += good['num']
-                    DynLog.record_log(f'{self.userinfo.name}战斗胜利' + good_txt)
-            tnt = ''
-            for u in msg['data']['round_arr']:
-                tnt = tnt + f"{u['name']}-{u['process']} "
-            if self.userinfo.team_pwd != '':
-                DynLog.record_log(tnt)
+                if msg['data']['lose'] == 1:
+                    DynLog.record_log(f'{self.userinfo.name}战斗失败', True)
+                    self.userinfo.fail_num += 1
+                else:
+                    self.userinfo.succ_num += 1
+                    good_txt = ''
+                    if 'exp' in msg['m']:
+                        self.userinfo.get_exp += msg['m']['exp']
+                    if 'rewards' in msg['m']:
+                        good_txt = "，获得"
+                        for good in msg['m']['rewards']:
+                            good_txt = good_txt + f"{good['name']}*{good['num']}"
+                            self.userinfo.reward_info[good['name']] += good['num']
+                        DynLog.record_log(f'{self.userinfo.name}战斗胜利' + good_txt)
+                tnt = ''
+                for u in msg['data']['round_arr']:
+                    tnt = tnt + f"{u['name']}-{u['process']} "
+                if self.userinfo.team_pwd != '':
+                    DynLog.record_log(tnt)
         elif msg['msgId'] == 'bat_start_result':
             pass
         elif msg['msgId'] == 'login':
