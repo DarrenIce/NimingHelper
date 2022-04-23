@@ -25,7 +25,7 @@ class WSocket:
         self.ws = None
 
     def login(self):
-        if self.proxy_host != '':
+        if self.proxy_host:
             self.proxies = {
                 "http": f"http://{self.proxy_host}:{self.proxy_port}",
                 "https": f"http://{self.proxy_host}:{self.proxy_port}"
@@ -210,6 +210,8 @@ class WSocket:
                 self.missioninfo['xiangyao']['loop_step'] = 11
         elif msg['msgId'] == 'ch_leave':
             DynLog.record_log(f"{msg['connId']}离开了队伍")
+            if msg['connId'] == self.userinfo.captain_id:
+                self.userinfo.in_team = False
         else:
             DynLog.record_log(message)
 
@@ -270,6 +272,7 @@ class WSocket:
 
     def joinTeam(self, captain_id, team_pwd):
         self.send(json.dumps({"msgType":"team_add","tid":captain_id,"pwd":team_pwd}))
+        self.userinfo.captain_id = captain_id
         time.sleep(2)
 
     def leaveTeam(self):

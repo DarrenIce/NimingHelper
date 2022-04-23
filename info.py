@@ -24,6 +24,7 @@ class UserInfo:
         self.fairy = 0  # 灵力
         self.team_pwd = ''
         self.team_num = 0
+        self.captain_id = 0
         self.is_live = False
         self.in_team = False
 
