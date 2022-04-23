@@ -39,7 +39,10 @@ class WSocket:
         login_info = {}
         while True:
             try:
-                r = requests.post(LOGIN_API, headers=headers, data={"loginName": self.username, "loginPwd": self.password}, proxies=self.proxies)
+                if self.proxies:
+                    r = requests.post(LOGIN_API, headers=headers, data={"loginName": self.username, "loginPwd": self.password}, proxies=self.proxies)
+                else:
+                    r = requests.post(LOGIN_API, headers=headers, data={"loginName": self.username, "loginPwd": self.password})
                 if r.status_code == 200:
                     login_info = json.loads(r.text)
                     break
@@ -47,7 +50,10 @@ class WSocket:
                 DynLog.record_log('request failed, retry...', True)
         # print(r.status_code)
         while r.status_code != 200 or login_info['code'] != 200:
-            r = requests.post(LOGIN_API, headers=headers, data={"loginName": self.username, "loginPwd": self.password}, proxies=self.proxies)
+            if self.proxies:
+                r = requests.post(LOGIN_API, headers=headers, data={"loginName": self.username, "loginPwd": self.password}, proxies=self.proxies)
+            else:
+                r = requests.post(LOGIN_API, headers=headers, data={"loginName": self.username, "loginPwd": self.password})
             # print(r.text)
             DynLog.record_log(f'{self.username} retry login...', True)
             if r.status_code == 200:
@@ -82,9 +88,15 @@ class WSocket:
     def signn(self, PROXY):
         while True:
             try:
-                r = requests.post("https://game.nimingxx.com/api/role/sign", headers=headers, cookies={"sign": self.userinfo.sign, "niming_email": self.username}, proxies=PROXY)
+                if PROXY:
+                    r = requests.post("https://game.nimingxx.com/api/role/sign", headers=headers, cookies={"sign": self.userinfo.sign, "niming_email": self.username}, proxies=PROXY)
+                else:
+                    r = requests.post("https://game.nimingxx.com/api/role/sign", headers=headers, cookies={"sign": self.userinfo.sign, "niming_email": self.username})
                 DynLog.record_log(self.userinfo.name + json.loads(r.text)['msg'])
-                r = requests.post("https://game.nimingxx.com/api/role/receiveWhReward", headers=headers, cookies={"sign": self.userinfo.sign, "niming_email": self.username}, proxies=PROXY)
+                if PROXY:
+                    r = requests.post("https://game.nimingxx.com/api/role/receiveWhReward", headers=headers, cookies={"sign": self.userinfo.sign, "niming_email": self.username}, proxies=PROXY)
+                else:
+                    r = requests.post("https://game.nimingxx.com/api/role/receiveWhReward", headers=headers, cookies={"sign": self.userinfo.sign, "niming_email": self.username})
                 DynLog.record_log(self.userinfo.name + json.loads(r.text)['msg'])
                 return
             except requests.exceptions.SSLError as e:
@@ -94,7 +106,10 @@ class WSocket:
     def fetchActivityInfo(self, PROXY):
         while True:
             try:
-                r = requests.post("https://game.nimingxx.com/api/role/getActivity", headers=headers, cookies={"sign": self.userinfo.sign, "niming_email": self.username}, proxies=PROXY)
+                if PROXY:
+                    r = requests.post("https://game.nimingxx.com/api/role/getActivity", headers=headers, cookies={"sign": self.userinfo.sign, "niming_email": self.username}, proxies=PROXY)
+                else:
+                    r = requests.post("https://game.nimingxx.com/api/role/getActivity", headers=headers, cookies={"sign": self.userinfo.sign, "niming_email": self.username})
                 DynLog.record_log(self.userinfo.name + " 获取每日任务信息")
                 msg = json.loads(r.text)
                 self.missioninfo['yaoling']['num'] = msg['data']['cy']

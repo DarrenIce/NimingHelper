@@ -22,7 +22,10 @@ class YaoLing:
             is_take = False
             while True:
                 try:
-                    r = requests.post('https://game.nimingxx.com/api/task/join', headers=headers, data={'type': 'cy'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username}, proxies=proxies)
+                    if proxies:
+                        r = requests.post('https://game.nimingxx.com/api/task/join', headers=headers, data={'type': 'cy'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username}, proxies=proxies)
+                    else:
+                        r = requests.post('https://game.nimingxx.com/api/task/join', headers=headers, data={'type': 'cy'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username})
                     ms_info = json.loads(r.text)
                     if ms_info['code'] == 200:
                         DynLog.record_log(ws.userinfo.name + ms_info['msg'])
@@ -66,7 +69,10 @@ class XiangYao:
             is_take = False
             while True:
                 try:
-                    r = requests.post('https://game.nimingxx.com/api/task/join', headers=headers, data={'type': 'xy'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username}, proxies=proxies)
+                    if proxies:
+                        r = requests.post('https://game.nimingxx.com/api/task/join', headers=headers, data={'type': 'xy'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username}, proxies=proxies)
+                    else:
+                        r = requests.post('https://game.nimingxx.com/api/task/join', headers=headers, data={'type': 'xy'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username})
                     ms_info = json.loads(r.text)
                     if ms_info['code'] == 200:
                         DynLog.record_log(ws.userinfo.name + ms_info['msg'])
@@ -126,7 +132,10 @@ class XunBao:
             is_take = False
             while True:
                 try:
-                    r = requests.post('https://game.nimingxx.com/api/task/join', headers=headers, data={'type': 'bt'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username}, proxies=proxies)
+                    if proxies:
+                        r = requests.post('https://game.nimingxx.com/api/task/join', headers=headers, data={'type': 'bt'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username}, proxies=proxies)
+                    else:
+                        r = requests.post('https://game.nimingxx.com/api/task/join', headers=headers, data={'type': 'bt'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username})
                     ms_info = json.loads(r.text)
                     if ms_info['code'] == 200:
                         DynLog.record_log(ws.userinfo.name + ms_info['msg'])
