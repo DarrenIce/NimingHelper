@@ -98,7 +98,7 @@ class DynLog:
     @classmethod
     def record_log(cls, s, error=False):
         task_id = cls.log_progress.add_task("")
-        # print(f'[{datetime.now().strftime("%H:%M:%S")}]{s}')
+        print(f'[{datetime.now().strftime("%H:%M:%S")}]{s}')
         if error:
             logger.error(s)
             cls.log_progress.update(task_id, description=f"[red]{s}", dt=datetime.now().strftime("%H:%M:%S"))

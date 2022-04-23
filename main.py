@@ -17,6 +17,6 @@ with open('config.yml' ,'r', encoding='utf-8') as f:
     conf = yaml.safe_load(f)
 
 users = Users(conf)
-with Live(DisplayLayout.my_layout, refresh_per_second=1):
-    users.login()
-    users.run()
+# with Live(DisplayLayout.my_layout, refresh_per_second=1):
+users.login()
+users.run()
