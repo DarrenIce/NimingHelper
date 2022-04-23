@@ -45,7 +45,7 @@ class UserMainInfo:
     def make_team_info(self):
         program_time = pd.to_timedelta(datetime.now() - GlobalVars.program_start_time).ceil('T')
         match_time1 = re.search(r"(\d+)\sdays\s(\d+):(\d+)", str(program_time))
-        time1_str = f"程序运行时间: {int(match_time1.group(1))}天{int(match_time1.group(2))}小时{int(match_time1.group(3))}分"
+        time1_str = f"{int(match_time1.group(1))}天{int(match_time1.group(2))}小时{int(match_time1.group(3))}分"
         message = Table.grid(expand=True)
         for _ in range(4):
             message.add_column(justify="right")
