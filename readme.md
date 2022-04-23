@@ -21,9 +21,26 @@
 
 需要你有一个python(仅在python3.9、3.10测试通过)，还需要你有多个代理端口(同Ip超过两个用户将无法进行每日任务)
 
-## 启动
+### 安装MiniConda
+```
+curl -O https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py39_4.11.0-Linux-x86_64.sh
+sh Miniconda3-py39_4.11.0-Linux-x86_64.sh
+```
 
+### 配置运行环境
+```
+conda create -n niming python=3.9
+conda activate niming
+cd NimingHelper
 pip install -r requirements.txt
-以config_example.yml为模板，创建config.yml文件，最多支持填入5个账号，第一个账号将作为降妖和挂机的队长，第一个技能将作为每个人进行采药和寻宝的自动技能
+cp config_example.yml config.yml
+vim config.yml
+```
 
-python main.py即可启动
+### 运行
+```
+python main.py
+```
+
+## 注意事项
+最多支持填入5个账号，第一个账号将作为降妖和挂机的队长，第一个技能将作为每个人进行采药和寻宝的自动技能
