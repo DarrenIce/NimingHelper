@@ -7,8 +7,11 @@ import time
 import requests
 import json
 
+headers = {
+    'accept': 'application/json, text/plain, */*',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36'
+}
 
-# 打药灵之前先组队、开自动再开始
 class YaoLing:
     start_loc = "丹城"
 
@@ -20,7 +23,7 @@ class YaoLing:
             is_take = False
             while True:
                 try:
-                    r = requests.post('https://game.nimingxx.com/api/task/join', data={'type': 'cy'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username}, proxies=proxies)
+                    r = requests.post('https://game.nimingxx.com/api/task/join', headers=headers, data={'type': 'cy'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username}, proxies=proxies)
                     ms_info = json.loads(r.text)
                     if ms_info['code'] == 200:
                         DynLog.record_log(ws.userinfo.name + ms_info['msg'])
@@ -51,13 +54,6 @@ class YaoLing:
         DynLog.record_log(f"{ws.userinfo.name}完成药灵任务")
 
 class XiangYao:
-    '''
-    创建队伍
-    判断是否做过降妖，加入队伍
-    车头接取任务
-    车头默认技能为平纹
-    只有车头需要send ws
-    '''
     start_loc = "林中栈道"
 
     @classmethod
@@ -71,7 +67,7 @@ class XiangYao:
             is_take = False
             while True:
                 try:
-                    r = requests.post('https://game.nimingxx.com/api/task/join', data={'type': 'xy'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username}, proxies=proxies)
+                    r = requests.post('https://game.nimingxx.com/api/task/join', headers=headers, data={'type': 'xy'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username}, proxies=proxies)
                     ms_info = json.loads(r.text)
                     if ms_info['code'] == 200:
                         DynLog.record_log(ws.userinfo.name + ms_info['msg'])
@@ -131,7 +127,7 @@ class XunBao:
             is_take = False
             while True:
                 try:
-                    r = requests.post('https://game.nimingxx.com/api/task/join', data={'type': 'bt'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username}, proxies=proxies)
+                    r = requests.post('https://game.nimingxx.com/api/task/join', headers=headers, data={'type': 'bt'}, cookies={"sign": ws.userinfo.sign, "niming_email": ws.username}, proxies=proxies)
                     ms_info = json.loads(r.text)
                     if ms_info['code'] == 200:
                         DynLog.record_log(ws.userinfo.name + ms_info['msg'])
