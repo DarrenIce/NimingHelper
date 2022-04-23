@@ -156,11 +156,12 @@ class WSocket:
                     for good in msg['m']['rewards']:
                         good_txt = good_txt + f"{good['name']}*{good['num']}"
                         self.userinfo.reward_info[good['name']] += good['num']
-                DynLog.record_log(f'{self.userinfo.name}战斗胜利' + good_txt)
+                    DynLog.record_log(f'{self.userinfo.name}战斗胜利' + good_txt)
             tnt = ''
             for u in msg['data']['round_arr']:
                 tnt = tnt + f"{u['name']}-{u['process']} "
-            DynLog.record_log(tnt)
+            if self.userinfo.team_pwd != '':
+                DynLog.record_log(tnt)
         elif msg['msgId'] == 'bat_start_result':
             pass
         elif msg['msgId'] == 'login':

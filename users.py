@@ -23,13 +23,14 @@ class Users:
             self.wss.append(wss)
 
     def ready(self):
+        joinother = self.conf.get('users', {}).get('joinother', False)
         for i in range(len(self.wss)):
             self.wss[i].goto_monster(self.conf.get('fight', {}).get('monster', ''))
-            if i == 0:
+            if i == 0 and not joinother:
                 self.wss[i].createTeam()
             else:
-                captain_id = self.wss[0].userinfo.id
-                team_pwd = self.wss[0].userinfo.team_pwd
+                captain_id = self.wss[0].userinfo.id if not joinother else self.conf.get('users', {}).get('captainid', 0)
+                team_pwd = self.wss[0].userinfo.team_pwd if not joinother else self.conf.get('users', {}).get('teampwd', '')
                 self.wss[i].joinTeam(captain_id, team_pwd)
                 self.wss[i].userinfo.in_team = True
             self.wss[i].setAutoFight(self.conf.get('fight', {}).get('skill', [])[i])
