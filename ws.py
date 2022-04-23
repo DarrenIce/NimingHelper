@@ -41,7 +41,6 @@ class WSocket:
             try:
                 r = requests.post(LOGIN_API, headers=headers, data={"loginName": self.username, "loginPwd": self.password}, proxies=self.proxies)
                 if r.status_code == 200:
-                    DynLog.record_log(r.text)
                     login_info = json.loads(r.text)
                     break
             except requests.exceptions.SSLError as e:
@@ -97,7 +96,6 @@ class WSocket:
             try:
                 r = requests.post("https://game.nimingxx.com/api/role/getActivity", headers=headers, cookies={"sign": self.userinfo.sign, "niming_email": self.username}, proxies=PROXY)
                 DynLog.record_log(self.userinfo.name + " 获取每日任务信息")
-                DynLog.record_log(r.text)
                 msg = json.loads(r.text)
                 self.missioninfo['yaoling']['num'] = msg['data']['cy']
                 self.missioninfo['xiangyao']['num'] = msg['data']['xy']

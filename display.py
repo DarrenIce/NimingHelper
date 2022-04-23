@@ -13,7 +13,9 @@ from rich.table import Table
 from rich.text import Text
 
 from info import UserInfo
+from log import Log
 
+logger = Log()()
 
 class GlobalVars:
     program_start_time: datetime = datetime.now()
@@ -96,10 +98,12 @@ class DynLog:
     @classmethod
     def record_log(cls, s, error=False):
         task_id = cls.log_progress.add_task("")
-        print(f'[{datetime.now().strftime("%H:%M:%S")}]{s}')
+        # print(f'[{datetime.now().strftime("%H:%M:%S")}]{s}')
         if error:
+            logger.error(s)
             cls.log_progress.update(task_id, description=f"[red]{s}", dt=datetime.now().strftime("%H:%M:%S"))
         else:
+            logger.info(s)
             cls.log_progress.update(task_id, description=f"[green]{s}", dt=datetime.now().strftime("%H:%M:%S"))
         if task_id >= 1:
             cls.log_progress.update(TaskID(task_id - 1), completed=100)
